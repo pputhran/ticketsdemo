@@ -1,0 +1,545 @@
+﻿@html.extend('layout',function(model){
+	@html.block('content',function(model){
+<div class="row">
+    <h2>DueDil Engineering tickets    
+    </h2>
+
+</div>
+<div class="row">
+    <div class="col-sm-3">
+        Total issues opened <span class="label label-info">{{filtered.length}}</span>
+    </div>
+    <div class="col-sm-3">Resolved tickets <span class="label label-success">{{0}}</span></div>
+    <div class="col-sm-3">Percentage <span class="label label-default">{{0/filtered.length}}</span></div>
+</div>
+<br />
+
+<div class="row">
+    <div class="col-md-8">
+        @if (model.error){
+        <p class="text-error">Error occured : @model.error</p>
+        }
+        
+        <div class="bs-example">
+            <div class="row">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="form-group">
+                        <input class="form-control" ng-model="searchText" placeholder="Filter"></li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Category<span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li ng-repeat="data in issueList | unique:'category' "><a href="#" ng-click="setSelectedClient('category')">{{data.category}}</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#" ng-click="setSelectedClient('category')">All records</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Project<span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li ng-repeat="data in issueList | unique:'project' "><a href="#" ng-click="setSelectedClient('project')">{{data.project}}</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#" ng-click="setSelectedClient('project')">All records</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Assignee<span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li ng-repeat="data in issueList | unique:'assignee'"><a href="#" ng-click="setSelectedClient('assignee')">{{data.assignee}}</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#" ng-click="setSelectedClient('assignee')">All records</a></li>
+                        </ul>
+
+
+                    </li>
+                </ul>
+            </div>
+
+            <ul class="list-group">
+                <a class="list-group-item" ng-repeat="data in filtered = (selectedItems |filter:searchText)"
+                    ng-click="collapsed=!collapsed">
+                    <div class="row" style="font-size: x-large; font-weight: bold;">
+                        <img ng-src="/images/bug.png" />
+                        <span class="">{{data.description}}</span>
+                    </div>
+                    <ul align="right" class="list-inline">
+                        <span class="glyphicon glyphicon-folder-open"></span>&nbsp;&nbsp;{{data.category}} 
+                        <span class="glyphicon glyphicon glyphicon-bookmark"></span>{{data.project}}
+                        <span class="glyphicon glyphicon-user"></span>{{ data.assignee}}
+                    </ul>
+                    <div ng-show="collapsed">
+                        <hr />
+                        <ul>
+                            <dl class="dl-horizontal">
+                                <dt>ID</dt>
+                                <dd>{{data.id}}</dd>
+                                <dt>Project</dt>
+                                <dd>{{data.project}}</dd>
+                                <dt>Assignee</dt>
+                                <dd>{{data.assignee}}</dd>
+                                <dt>Description</dt>
+                                <dd>{{data.description}}</dd>
+                                <dt>Status</dt>
+                                <dd><span class="label label-warning">{{data.status}}</span></dd>
+
+                            </dl>
+
+                        </ul>
+
+                    </div>
+                </a>
+
+            </ul>
+
+
+            <ul class="list-group">
+                <a class="list-group-item" ng-repeat="data in filtered = (issueList |filter:searchText | filter:selectedItems )"
+                    ng-click="collapsed=!collapsed">
+                    <div class="row" style="font-size: x-large; font-weight: bold;">
+                        <img ng-src="/images/bug.png" />
+                        <span class="">{{data.description}}</span>
+                    </div>
+                    <ul align="right" class="list-inline">
+                        <span class="glyphicon glyphicon-folder-open"></span>&nbsp;&nbsp;{{data.category}} 
+                        <span class="glyphicon glyphicon glyphicon-bookmark"></span>&nbsp;{{data.project}}
+                        <span class="glyphicon glyphicon-user"></span>{{ data.assignee}}
+                    </ul>
+                    <div ng-show="collapsed">
+                        <hr />
+                        <ul>
+                            <dl class="dl-horizontal">
+                                <dt>ID</dt>
+                                <dd>{{data.id}}</dd>
+                                <dt>Project</dt>
+                                <dd>{{data.project}}</dd>
+                                <dt>Assignee</dt>
+                                <dd>{{data.assignee}}</dd>
+                                <dt>Description</dt>
+                                <dd>{{data.description}}</dd>
+                                <dt>Status</dt>
+                                <dd><span class="label label-warning">{{data.status}}</span></dd>
+
+                            </dl>
+
+                        </ul>
+                    </div>
+                </a>
+
+
+            </ul>
+
+
+        </div>
+
+
+    </div>
+    <div class="col-md-4" style="background-color: ghostwhite">
+        <section ng-controller="TabController as tab">
+            <ul class="nav nav-pills">
+                <li ng-class="{ active:tab.isSet(1) }">
+                    <a href="" ng-click="tab.setTab(1)">Assignee</a>
+                </li>
+                <li ng-class="{ active:tab.isSet(2) }">
+                    <a href="" ng-click="tab.setTab(2)">Project</a>
+                </li>
+                <li ng-class="{ active:tab.isSet(3) }">
+                    <a href="" ng-click="tab.setTab(3)">Category</a>
+                </li>
+            </ul>
+
+            <div ng-show="tab.isSet(1)">
+                <div id="pieChart"></div>
+            </div>
+
+
+            <div ng-show="tab.isSet(2)">
+                <div id="projectPie"></div>
+            </div>
+
+
+            <div ng-show="tab.isSet(3)">
+                <bars></bars>
+
+
+            </div>
+
+        </section>
+    </div>
+
+</div>
+<script>
+
+    var data = [{ "label": "Front End", "value": 4 },
+                { "label": "Data", "value": 4 },
+                { "label": "Design", "value": 2 },
+                { "label": "Copy", "value": 2 }
+    ];
+
+    //maximum of data you want to use
+    var data_max = 80,
+
+    //number of tickmarks to use
+    num_ticks = 2,
+
+    //margins
+    left_margin = 60,
+    right_margin = 60,
+    top_margin = 30,
+    bottom_margin = 0;
+
+
+    var w = 400,                        //width
+        h = 200,                        //height
+        color = function (id) { return '#00b3dc' };
+
+    var x = d3.scale.linear()
+        .domain([0, data_max])
+        .range([0, w - (left_margin + right_margin)]),
+        y = d3.scale.ordinal()
+        .domain(d3.range(data.length))
+        .rangeBands([bottom_margin, h - top_margin], .5);
+
+
+    var chart_top = h - y.rangeBand() / 2 - top_margin;
+    var chart_bottom = bottom_margin + y.rangeBand() / 2;
+    var chart_left = left_margin;
+    var chart_right = w - right_margin;
+
+    /*
+     *  Setup the SVG element and position it
+     */
+    var vis = d3.select("bars")
+        .append("svg:svg")
+            .attr("width", w)
+            .attr("height", h)
+        .append("svg:g")
+            .attr("id", "barchart")
+            .attr("class", "barchart")
+
+
+    //Ticks
+    var rules = vis.selectAll("g.rule")
+        .data(x.ticks(num_ticks))
+    .enter()
+        .append("svg:g")
+        .attr("transform", function (d) {
+            return "translate(" + (chart_left + x(d)) + ")";
+        });
+    rules.append("svg:line")
+        .attr("class", "tick")
+        .attr("y1", chart_top)
+        .attr("y2", chart_top + 4)
+        .attr("stroke", "black");
+
+    rules.append("svg:text")
+        .attr("class", "tick_label")
+        .attr("text-anchor", "middle")
+        .attr("y", chart_top)
+        .text(function (d) {
+            return d;
+        });
+    var bbox = vis.selectAll(".tick_label").node().getBBox();
+    vis.selectAll(".tick_label")
+    .attr("transform", function (d) {
+        return "translate(0," + (bbox.height) + ")";
+    });
+
+    var bars = vis.selectAll("g.bar")
+        .data(data)
+    .enter()
+        .append("svg:g")
+            .attr("class", "bar")
+            .attr("transform", function (d, i) {
+                return "translate(0, " + y(i) + ")";
+            });
+
+    bars.append("svg:rect")
+        .attr("x", right_margin)
+        .attr("width", function (d) {
+            return (x(d.value) * 5);
+        })
+        .attr("height", y.rangeBand())
+        .attr("fill", color(0))
+        .attr("stroke", color(0));
+
+
+    //Labels
+    var labels = vis.selectAll("g.bar")
+        .append("svg:text")
+            .attr("class", "label")
+            .attr("x", 0)
+            .attr("text-anchor", "right")
+            .text(function (d) {
+                return d.label;
+            });
+
+    var bbox = labels.node().getBBox();
+    vis.selectAll(".label")
+        .attr("transform", function (d) {
+            return "translate(0, " + (y.rangeBand() / 2 + bbox.height / 4) + ")";
+        });
+
+
+    labels = vis.selectAll("g.bar")
+        .append("svg:text")
+        .attr("class", "value")
+        .attr("x", function (d) {
+            return x(d.value) + right_margin + 10;
+        })
+        .attr("text-anchor", "left")
+        .text(function (d) {
+            return "" + d.value;
+        });
+
+    bbox = labels.node().getBBox();
+    vis.selectAll(".value")
+        .attr("transform", function (d) {
+            return "translate(0, " + (y.rangeBand() / 2 + bbox.height / 4) + ")";
+        });
+
+    //Axes
+    vis.append("svg:line")
+        .attr("class", "axes")
+        .attr("x1", chart_left)
+        .attr("x2", chart_left)
+        .attr("y1", chart_bottom)
+        .attr("y2", chart_top)
+        .attr("stroke", "black");
+    vis.append("svg:line")
+       .attr("class", "axes")
+       .attr("x1", chart_left)
+       .attr("x2", chart_right)
+       .attr("y1", chart_top)
+       .attr("y2", chart_top)
+       .attr("stroke", "black");</script>
+
+<script>
+    var pie = new d3pie("pieChart", {
+        "header": {
+            "title": {
+                "text": "Assignee View",
+                "fontSize": 24,
+                "font": "open sans"
+            },
+            "subtitle": {
+                "text": "",
+                "color": "#999999",
+                "fontSize": 12,
+                "font": "open sans"
+            },
+            "titleSubtitlePadding": 9
+        },
+        "footer": {
+            "color": "#999999",
+            "fontSize": 10,
+            "font": "open sans",
+            "location": "bottom-left"
+        },
+        "size": {
+            "canvasWidth": 390,
+            "pieOuterRadius": "90%"
+        },
+        "data": {
+            "sortOrder": "value-desc",
+            "content": [
+                {
+                    "label": "Nick",
+                    "value": 2,
+                    "color": "#2484c1"
+                },
+                {
+                    "label": "Tom",
+                    "value": 1,
+                    "color": "#0c6197"
+                },
+                {
+                    "label": "Chi",
+                    "value": 1,
+                    "color": "#4daa4b"
+                },
+                {
+                    "label": "Matthew",
+                    "value": 1,
+                    "color": "#90c469"
+                },
+                {
+                    "label": "Owen",
+                    "value": 2,
+                    "color": "#daca61"
+                },
+                {
+                    "label": "Victoria",
+                    "value": 1,
+                    "color": "#e4a14b"
+                },
+                {
+                    "label": "Leo",
+                    "value": 2,
+                    "color": "#e98125"
+                },
+                {
+                    "label": "Mat",
+                    "value": 1,
+                    "color": "#cb2121"
+                },
+                {
+                    "label": "Wojciech",
+                    "value": 1,
+                    "color": "#830909"
+                }
+            ]
+        },
+        "labels": {
+            "outer": {
+                "pieDistance": 32
+            },
+            "inner": {
+                "hideWhenLessThanPercentage": 3
+            },
+            "mainLabel": {
+                "fontSize": 11
+            },
+            "percentage": {
+                "color": "#ffffff",
+                "decimalPlaces": 0
+            },
+            "value": {
+                "color": "#adadad",
+                "fontSize": 11
+            },
+            "lines": {
+                "enabled": true
+            },
+            "truncation": {
+                "enabled": true
+            }
+        },
+        "effects": {
+            "pullOutSegmentOnClick": {
+                "effect": "linear",
+                "speed": 400,
+                "size": 8
+            }
+        },
+        "misc": {
+            "gradient": {
+                "enabled": true,
+                "percentage": 100
+            }
+        }
+    });
+</script>
+
+<script>
+    var pie = new d3pie("projectPie", {
+        "header": {
+            "title": {
+                "text": "",
+                "fontSize": 20,
+                "font": "open sans"
+            },
+            "subtitle": {
+                "text": "",
+                "color": "#999999",
+                "fontSize": 12,
+                "font": "open sans"
+            },
+            "titleSubtitlePadding": 9
+        },
+        "footer": {
+            "color": "#999999",
+            "fontSize": 10,
+            "font": "open sans",
+            "location": "bottom-left"
+        },
+        "size": {
+            "canvasWidth": 390,
+            "pieOuterRadius": "90%"
+        },
+        "data": {
+            "sortOrder": "value-desc",
+            "content": [
+                {
+                    "label": "Top bar redesign",
+                    "value": 2,
+                    "color": "#043a00"
+                },
+                {
+                    "label": "Data imports",
+                    "value": 2,
+                    "color": "#0f4904"
+                },
+                {
+                    "label": "Email",
+                    "value": 2,
+                    "color": "#155d07"
+                },
+                {
+                    "label": "Bug fixes",
+                    "value": 2,
+                    "color": "#207f0e"
+                },
+                {
+                    "label": "HomePage",
+                    "value": 1,
+                    "color": "#2ea217"
+                },
+                {
+                    "label": "URL Data",
+                    "value": 1,
+                    "color": "#41cb28"
+                },
+                {
+                    "label": "null",
+                    "value": 1,
+                    "color": "#58ea3e"
+                },
+                {
+                    "label": "International",
+                    "value": 1,
+                    "color": "#9ff990"
+                }
+            ]
+        },
+        "labels": {
+            "outer": {
+                "pieDistance": 32
+            },
+            "inner": {
+                "hideWhenLessThanPercentage": 3
+            },
+            "mainLabel": {
+                "fontSize": 11
+            },
+            "percentage": {
+                "color": "#ffffff",
+                "decimalPlaces": 0
+            },
+            "value": {
+                "color": "#adadad",
+                "fontSize": 11
+            },
+            "lines": {
+                "enabled": true
+            },
+            "truncation": {
+                "enabled": true
+            }
+        },
+        "effects": {
+            "pullOutSegmentOnClick": {
+                "effect": "linear",
+                "speed": 400,
+                "size": 8
+            }
+        },
+        "misc": {
+            "gradient": {
+                "enabled": true,
+                "percentage": 100
+            }
+        }
+    });
+</script>
+})
+})
