@@ -1,4 +1,7 @@
-﻿(function (seedData) {
+﻿// file which contains the data.
+// returns data in JSON format
+
+(function (seedData) {
     seedData.issueList = [
         {
             "id": "001",
