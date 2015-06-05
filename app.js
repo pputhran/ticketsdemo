@@ -5,12 +5,10 @@
 
 var express = require('express');
 var routes = require('./routes');
-var model = require('./model');
 var http = require('http');
 var path = require('path');
 
 var app = express();
-
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -32,6 +30,7 @@ if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
 
+//defining the routes
 app.get('/', routes.index);
 app.get('/issueList', routes.issueList);
 
